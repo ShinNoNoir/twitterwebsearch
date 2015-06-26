@@ -1,0 +1,7 @@
+# Ignore Eclipse project files
+/.project
+/.pydevproject
+
+# Ignore compiled Python files
+*.pyc
+
