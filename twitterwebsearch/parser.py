@@ -2,8 +2,6 @@
 Parser module for parsing Twitter search results obtained through the web 
 interface.
 """
-
-import json
 import bs4
 
 def has_class(class_name):
