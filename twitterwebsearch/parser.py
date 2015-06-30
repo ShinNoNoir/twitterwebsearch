@@ -67,18 +67,3 @@ def parse_search_results(html):
         tweet = parse_tweet_tag(tag)
         yield tweet
 
-def read_search_results(path):
-    with open(path, 'r') as fh:
-        for tweet in parse_search_results(fh.read()):
-            yield tweet
-
-def save_tweets(tweets, path):
-    with open(path, 'w') as fh:
-        for tweet in tweets:
-            print >>fh, json.dumps(tweet)
-
-def load_tweets(path):
-    with open(path, 'r') as fh:
-        for line in fh:
-            yield json.loads(line)
-
