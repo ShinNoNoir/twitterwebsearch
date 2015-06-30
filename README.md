@@ -14,7 +14,9 @@ Selenium and Firefox.
     pip install https://github.com/ShinNoNoir/twitterwebsearch/archive/master.zip
 
 ## Requirements:
-    Firefox installed and available on PATH
+One of the following needs to be installed and available on your system's `PATH`:
+ * [PhantomJS](http://phantomjs.org/)
+ * [Firefox](https://www.mozilla.org/en-US/firefox/)
 
 ## Small example:
 

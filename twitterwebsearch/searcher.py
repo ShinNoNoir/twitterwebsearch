@@ -17,11 +17,27 @@ SCROLLER_SCRIPT = '''
     scroller = setInterval(function() { footer.scrollIntoView(); }, 250);
 '''
 
+DRIVER_PRIORITY = [webdriver.PhantomJS, webdriver.Firefox]
+
 POLL_TIME = 1 # seconds
 
+def create_driver():
+    if not hasattr(create_driver, 'driver'):
+        for driver in DRIVER_PRIORITY:
+            try:
+                res = driver()
+            except:
+                continue
+            
+            create_driver.driver = driver
+            return res
+        else:
+            raise RuntimeError('None of the following Selenium drivers are available: %r' % DRIVER_PRIORITY)
+    else:
+        return create_driver.driver()
 
 def search(query):
-    driver = webdriver.Firefox()
+    driver = create_driver()
     driver.get(TWITTER_SEARCH_URL)
      
     elem = driver.find_element_by_id(SEARCH_FIELD)
