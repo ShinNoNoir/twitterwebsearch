@@ -15,7 +15,7 @@ def main():
     tweets = twitterwebsearch.parser.parse_search_results(results)
     tweets = list(tweets) # convert generator into list
     
-    print json.dumps(list(tweets), indent=2)
+    print json.dumps(tweets, indent=2)
     
     twitterwebsearch.io.save_tweets(tweets, 'example.ljson')
     loaded_tweets = twitterwebsearch.io.load_tweets('example.ljson')
