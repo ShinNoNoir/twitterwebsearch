@@ -29,8 +29,7 @@ Selenium and Firefox.
         results = twitterwebsearch.search(QUERY)
         tweets = twitterwebsearch.parser.parse_search_results(results)
         tweets = list(tweets) # convert generator into list
-        
-        print json.dumps(list(tweets), indent=2)
+        print json.dumps(tweets, indent=2)
     
     if __name__ == '__main__':
         main()
