@@ -22,7 +22,7 @@ LIVE_TWEETS_SELECTOR = 'a[href*="f=tweets"]'
 
 DRIVER_PRIORITY = [webdriver.PhantomJS, webdriver.Firefox]
 
-QUERY_TIMEOUT = 10 # seconds
+QUERY_TIMEOUT = 20 # seconds
 POLL_TIME = 1 # seconds
 
 def create_driver():
