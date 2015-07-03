@@ -2,6 +2,8 @@
 Module for using the web interface of Twitter's search.
 """
 import time
+import datetime
+from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -37,6 +39,11 @@ def create_driver():
     else:
         return create_driver.driver()
 
+def debug_screenshot(driver):
+    path = '__twitterwebsearch.%s.png' % datetime.datetime.now().strftime('%Y-%m-%d.%H%M')
+    driver.save_screenshot(path)
+    return path
+    
 def search(query):
     driver = create_driver()
     driver.get(TWITTER_SEARCH_URL)
@@ -50,8 +57,15 @@ def search(query):
         elem = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, WAIT_FOR_CLASS))
         )
-        driver.find_element_by_css_selector(LIVE_TWEETS_SELECTOR).click()
+        try:
+            driver.find_element_by_css_selector(LIVE_TWEETS_SELECTOR).click()
+        except NoSuchElementException:
+            debug_screenshot(driver)
+            raise
         driver.execute_script(SCROLLER_SCRIPT)
+    except:
+        debug_screenshot(driver)
+        raise
     finally:
         old_size = size = 0
         delta = not 0
