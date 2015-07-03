@@ -44,7 +44,12 @@ def debug_screenshot(driver):
     path = '__twitterwebsearch.%s.png' % datetime.datetime.now().strftime('%Y-%m-%d.%H%M')
     driver.save_screenshot(path)
     return path
+
+def wait_until_url(driver, predicate, sleep=0.25):
+    while not predicate(driver.current_url):
+        time.sleep(sleep)
     
+
 def search(query):
     driver = create_driver()
     driver.get(TWITTER_SEARCH_URL)
@@ -63,6 +68,8 @@ def search(query):
         except NoSuchElementException:
             debug_screenshot(driver)
             raise
+        
+        wait_until_url(driver, predicate=lambda url: '&f=tweets' in url)
         driver.execute_script(SCROLLER_SCRIPT)
     except:
         debug_screenshot(driver)
