@@ -22,6 +22,7 @@ LIVE_TWEETS_SELECTOR = 'a[href*="f=tweets"]'
 
 DRIVER_PRIORITY = [webdriver.PhantomJS, webdriver.Firefox]
 
+QUERY_TIMEOUT = 10 # seconds
 POLL_TIME = 1 # seconds
 
 def create_driver():
@@ -54,7 +55,7 @@ def search(query):
     
     res = ''
     try:
-        elem = WebDriverWait(driver, 10).until(
+        elem = WebDriverWait(driver, QUERY_TIMEOUT).until(
             EC.presence_of_element_located((By.CLASS_NAME, WAIT_FOR_CLASS))
         )
         try:
