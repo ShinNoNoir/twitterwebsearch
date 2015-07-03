@@ -9,7 +9,6 @@ import twitterwebsearch.io
 
 QUERY = '@shinnonoir since:2010-01-20 until:2010-02-01'
 
-
 def main():
     results = twitterwebsearch.search(QUERY)
     tweets = twitterwebsearch.parser.parse_search_results(results)

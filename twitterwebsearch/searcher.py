@@ -16,6 +16,7 @@ SCROLLER_SCRIPT = '''
     footer = document.getElementsByClassName('stream-footer')[0];
     scroller = setInterval(function() { footer.scrollIntoView(); }, 250);
 '''
+LIVE_TWEETS_SELECTOR = 'a[href*="f=tweets"]'
 
 DRIVER_PRIORITY = [webdriver.PhantomJS, webdriver.Firefox]
 
@@ -39,7 +40,7 @@ def create_driver():
 def search(query):
     driver = create_driver()
     driver.get(TWITTER_SEARCH_URL)
-     
+    
     elem = driver.find_element_by_id(SEARCH_FIELD)
     elem.send_keys(query)
     elem.send_keys(Keys.ENTER)
@@ -49,6 +50,7 @@ def search(query):
         elem = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, WAIT_FOR_CLASS))
         )
+        driver.find_element_by_css_selector(LIVE_TWEETS_SELECTOR).click()
         driver.execute_script(SCROLLER_SCRIPT)
     finally:
         old_size = size = 0
