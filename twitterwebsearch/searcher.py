@@ -1,6 +1,7 @@
 """
 Module for using the web interface of Twitter's search.
 """
+import sys
 import time
 import datetime
 from selenium.common.exceptions import NoSuchElementException
@@ -40,10 +41,19 @@ def create_driver():
     else:
         return create_driver.driver()
 
-def debug_screenshot(driver):
-    path = '__twitterwebsearch.%s.png' % datetime.datetime.now().strftime('%Y-%m-%d.%H%M')
-    driver.save_screenshot(path)
-    return path
+def debug_screenshot(driver, dontraise=True):
+    try:
+        path = '__twitterwebsearch.%s.png' % datetime.datetime.now().strftime('%Y-%m-%d.%H%M')
+        driver.save_screenshot(path)
+        return path
+    except:
+        if dontraise:
+            exc_type, exc_value, _ = sys.exc_info()
+            print >>sys.stderr, 'Failed to create screenshot:', exc_type, '--', exc_value 
+        else:
+            raise
+        
+    
 
 def wait_until_url(driver, predicate, sleep=0.25):
     while not predicate(driver.current_url):
