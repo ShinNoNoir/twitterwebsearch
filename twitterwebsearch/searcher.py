@@ -71,10 +71,7 @@ def search(query):
         
         wait_until_url(driver, predicate=lambda url: '&f=tweets' in url)
         driver.execute_script(SCROLLER_SCRIPT)
-    except:
-        debug_screenshot(driver)
-        raise
-    finally:
+        
         old_size = size = 0
         delta = not 0
         while delta != 0:
@@ -85,6 +82,11 @@ def search(query):
             delta = size - old_size
             
         res = driver.page_source
+        
+    except:
+        debug_screenshot(driver)
+        raise
+    finally:
         driver.quit()
         
     return res
