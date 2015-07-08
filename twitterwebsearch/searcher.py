@@ -61,6 +61,9 @@ def wait_until_url(driver, predicate, sleep=0.25):
     
 
 def search(query):
+    return search_html(query)
+
+def search_html(query):
     driver = create_driver()
     driver.get(TWITTER_SEARCH_URL)
     
