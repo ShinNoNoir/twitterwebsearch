@@ -60,18 +60,13 @@ def wait_until_url(driver, predicate, sleep=0.25):
         time.sleep(sleep)
     
 
-def search(query):
-    return search_html(query)
-
-def search_html(query):
-    driver = create_driver()
+def start_search(driver, query):
     driver.get(TWITTER_SEARCH_URL)
     
     elem = driver.find_element_by_id(SEARCH_FIELD)
     elem.send_keys(query)
     elem.send_keys(Keys.ENTER)
     
-    res = ''
     try:
         elem = WebDriverWait(driver, QUERY_TIMEOUT).until(
             EC.presence_of_element_located((By.CLASS_NAME, WAIT_FOR_CLASS))
@@ -83,6 +78,20 @@ def search_html(query):
             raise
         
         wait_until_url(driver, predicate=lambda url: '&f=tweets' in url)
+    except:
+        debug_screenshot(driver)
+        raise
+        
+
+def search(query):
+    return search_html(query)
+
+def search_html(query):
+    driver = create_driver()
+    
+    res = ''
+    try:
+        start_search(driver, query)
         driver.execute_script(SCROLLER_SCRIPT)
         
         old_size = size = 0
