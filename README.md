@@ -21,14 +21,14 @@ One of the following needs to be installed and available on your system's `PATH`
 ## Small example:
 
     import json
-    import twitterwebsearch
+    import twitterwebsearch.searcher
     import twitterwebsearch.parser
     
     QUERY = '@shinnonoir since:2010-01-20 until:2010-02-01'
     
     
     def main():
-        results = twitterwebsearch.search(QUERY)
+        results = twitterwebsearch.searcher.search_html(QUERY)
         tweets = twitterwebsearch.parser.parse_search_results(results)
         tweets = list(tweets) # convert generator into list
         print json.dumps(tweets, indent=2)
