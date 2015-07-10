@@ -39,7 +39,7 @@ footer = document.getElementsByClassName('stream-footer')[0];
         else {
             document.body.scrollIntoView();
             for (var i=0; i < tweets.length; i++) {
-                elem = tweets[i];
+                var elem = tweets[i];
                 elem.parentNode.removeChild(elem);
             }
             document.body.classList.add('more-tweets-loaded');
