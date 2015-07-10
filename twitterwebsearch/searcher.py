@@ -4,6 +4,8 @@ Module for using the web interface of Twitter's search.
 import sys
 import time
 import datetime
+import twitterwebsearch.parser
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -19,6 +21,51 @@ SCROLLER_SCRIPT = '''
     footer = document.getElementsByClassName('stream-footer')[0];
     scroller = setInterval(function() { footer.scrollIntoView(); }, 250);
 '''
+
+LOAD_MORE_TWEETS_FUNCTION_NAME = 'load_more_tweets'
+LOAD_MORE_TWEETS_FUNCTION = LOAD_MORE_TWEETS_FUNCTION_NAME + '();'
+LOAD_MORE_TWEETS_SCRIPT = '''
+footer = document.getElementsByClassName('stream-footer')[0];
+%s = function () {
+    document.body.classList.remove('more-tweets-loaded');
+    var tweets = document.querySelectorAll('.tweet[data-tweet-id]');
+    
+    function removeTweets() {
+        var more = document.querySelector(".timeline-end.has-more-items") !== null;
+        var not_loaded = document.querySelectorAll('.tweet[data-tweet-id]').length === tweets.length;
+        if (more && not_loaded) {
+            window.setTimeout(removeTweets, 250);
+        }
+        else {
+            document.body.scrollIntoView();
+            for (var i=0; i < tweets.length; i++) {
+                elem = tweets[i];
+                elem.parentNode.removeChild(elem);
+            }
+            document.body.classList.add('more-tweets-loaded');
+        }
+    };
+    removeTweets();
+    footer.scrollIntoView();
+}
+''' % LOAD_MORE_TWEETS_FUNCTION_NAME
+MORE_TWEETS_LOADED_CLASS = 'more-tweets-loaded'
+MORE_TWEETS_LOADED_TIMEOUT = 1 # seconds
+MORE_TWEETS_LOADED_TIMEOUT_MAX_ATTEMPTS = 20
+SCROLL_BACK_AND_FORTH_SCRIPT = '''
+    (function () {
+        var scrollto = [document.body, footer];
+        
+        function scrollBackAndForth() {
+            var elem = scrollto.pop(0);
+            elem.scrollIntoView();
+            if (scrollto.length > 0)
+                window.setTimeout(scrollBackAndForth, 250);
+        }
+        scrollBackAndForth();
+    })();
+'''
+
 LIVE_TWEETS_SELECTOR = 'a[href*="f=tweets"]'
 
 DRIVER_PRIORITY = [webdriver.PhantomJS, webdriver.Firefox]
@@ -60,15 +107,13 @@ def wait_until_url(driver, predicate, sleep=0.25):
         time.sleep(sleep)
     
 
-def search(query):
-    driver = create_driver()
+def start_search(driver, query):
     driver.get(TWITTER_SEARCH_URL)
     
     elem = driver.find_element_by_id(SEARCH_FIELD)
     elem.send_keys(query)
     elem.send_keys(Keys.ENTER)
     
-    res = ''
     try:
         elem = WebDriverWait(driver, QUERY_TIMEOUT).until(
             EC.presence_of_element_located((By.CLASS_NAME, WAIT_FOR_CLASS))
@@ -80,6 +125,55 @@ def search(query):
             raise
         
         wait_until_url(driver, predicate=lambda url: '&f=tweets' in url)
+    except:
+        debug_screenshot(driver)
+        raise
+        
+
+def search(query):
+    driver = create_driver()
+    try:
+        start_search(driver, query)
+        driver.execute_script(LOAD_MORE_TWEETS_SCRIPT)
+        
+        more_tweets = True
+        while more_tweets:
+            source = driver.page_source
+            driver.execute_script(LOAD_MORE_TWEETS_FUNCTION)
+            
+            more_tweets = False
+            tweets = twitterwebsearch.parser.parse_search_results(source)
+            for tweet in tweets:
+                more_tweets = True
+                yield tweet
+            
+            attempts = 0
+            while True:
+                attempts += 1
+                try:
+                    WebDriverWait(driver, MORE_TWEETS_LOADED_TIMEOUT).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, MORE_TWEETS_LOADED_CLASS))
+                    )
+                    break
+                except:
+                    if attempts <= MORE_TWEETS_LOADED_TIMEOUT_MAX_ATTEMPTS:
+                        driver.execute_script(SCROLL_BACK_AND_FORTH_SCRIPT)
+                    else:
+                        raise
+                
+        
+    except:
+        debug_screenshot(driver)
+        raise
+    finally:
+        driver.quit()
+
+def search_html(query):
+    driver = create_driver()
+    
+    res = ''
+    try:
+        start_search(driver, query)
         driver.execute_script(SCROLLER_SCRIPT)
         
         old_size = size = 0
