@@ -50,7 +50,21 @@ footer = document.getElementsByClassName('stream-footer')[0];
 }
 ''' % LOAD_MORE_TWEETS_FUNCTION_NAME
 MORE_TWEETS_LOADED_CLASS = 'more-tweets-loaded'
-MORE_TWEETS_LOADED_TIMEOUT = 10 # seconds
+MORE_TWEETS_LOADED_TIMEOUT = 1 # seconds
+MORE_TWEETS_LOADED_TIMEOUT_MAX_ATTEMPTS = 20
+SCROLL_BACK_AND_FORTH_SCRIPT = '''
+    (function () {
+        var scrollto = [document.body, footer];
+        
+        function scrollBackAndForth() {
+            var elem = scrollto.pop(0);
+            elem.scrollIntoView();
+            if (scrollto.length > 0)
+                window.setTimeout(scrollBackAndForth, 250);
+        }
+        scrollBackAndForth();
+    })();
+'''
 
 LIVE_TWEETS_SELECTOR = 'a[href*="f=tweets"]'
 
@@ -133,10 +147,20 @@ def search(query):
                 more_tweets = True
                 yield tweet
             
-            WebDriverWait(driver, MORE_TWEETS_LOADED_TIMEOUT).until(
-                EC.presence_of_element_located((By.CLASS_NAME, MORE_TWEETS_LOADED_CLASS))
-            )
-            
+            attempts = 0
+            while True:
+                attempts += 1
+                try:
+                    WebDriverWait(driver, MORE_TWEETS_LOADED_TIMEOUT).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, MORE_TWEETS_LOADED_CLASS))
+                    )
+                    break
+                except:
+                    if attempts <= MORE_TWEETS_LOADED_TIMEOUT_MAX_ATTEMPTS:
+                        driver.execute_script(SCROLL_BACK_AND_FORTH_SCRIPT)
+                    else:
+                        raise
+                
         
     except:
         debug_screenshot(driver)
