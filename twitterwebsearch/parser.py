@@ -25,6 +25,7 @@ def parse_tweet_tag(tag):
     urls = [
         a['data-expanded-url']
         for a in tweet_body_tag.find_all('a', class_=has_class('twitter-timeline-link'))
+        if 'data-expanded-url' in a.attrs
     ]
     
     mentions = [
