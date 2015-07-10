@@ -107,12 +107,19 @@ def wait_until_url(driver, predicate, sleep=0.25):
         time.sleep(sleep)
     
 
+def _fill_text_field_and_submit(driver, elem, value):
+    elem.clear()
+    time.sleep(0.2)
+    elem.send_keys(value)
+    time.sleep(0.2)
+    elem.submit()
+    
+
 def start_search(driver, query):
     driver.get(TWITTER_SEARCH_URL)
     
     elem = driver.find_element_by_id(SEARCH_FIELD)
-    elem.send_keys(query)
-    elem.send_keys(Keys.ENTER)
+    _fill_text_field_and_submit(driver, elem, query)
     
     try:
         elem = WebDriverWait(driver, QUERY_TIMEOUT).until(
