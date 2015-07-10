@@ -50,7 +50,7 @@ footer = document.getElementsByClassName('stream-footer')[0];
 }
 ''' % LOAD_MORE_TWEETS_FUNCTION_NAME
 MORE_TWEETS_LOADED_CLASS = 'more-tweets-loaded'
-MORE_TWEETS_LOADED_TIMEOUT = 5 # seconds
+MORE_TWEETS_LOADED_TIMEOUT = 10 # seconds
 
 LIVE_TWEETS_SELECTOR = 'a[href*="f=tweets"]'
 
