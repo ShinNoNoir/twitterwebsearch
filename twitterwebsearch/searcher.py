@@ -26,6 +26,7 @@ LOAD_MORE_TWEETS_FUNCTION_NAME = 'load_more_tweets'
 LOAD_MORE_TWEETS_FUNCTION = LOAD_MORE_TWEETS_FUNCTION_NAME + '();'
 LOAD_MORE_TWEETS_SCRIPT = '''
 footer = document.getElementsByClassName('stream-footer')[0];
+
 %s = function () {
     document.body.classList.remove('more-tweets-loaded');
     var tweets = document.querySelectorAll('.tweet[data-tweet-id]');
@@ -39,14 +40,30 @@ footer = document.getElementsByClassName('stream-footer')[0];
         else {
             document.body.scrollIntoView();
             for (var i=0; i < tweets.length; i++) {
-                var elem = tweets[i];
-                elem.parentNode.removeChild(elem);
+                var tweetElem = tweets[i];
+                var liElem = tweetElem.parentNode;
+                liElem.parentNode.removeChild(liElem);
             }
+            pruneEmptyListItems();
             document.body.classList.add('more-tweets-loaded');
+            tweets = null;
         }
     };
     removeTweets();
     footer.scrollIntoView();
+}
+
+isEmptyLI = function(node) {
+    return node.firstElementChild === null || node.firstElementChild.firstElementChild === null;
+}
+pruneEmptyListItems = function() {
+    var lis = document.querySelectorAll('li.stream-item');
+    
+    for (var i=0; i < lis.length; i++)
+        if (isEmptyLI(lis[i]))
+            lis[i].parentNode.removeChild(lis[i]);
+    
+    lis = null;
 }
 ''' % LOAD_MORE_TWEETS_FUNCTION_NAME
 MORE_TWEETS_LOADED_CLASS = 'more-tweets-loaded'
