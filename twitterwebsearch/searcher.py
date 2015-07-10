@@ -37,7 +37,7 @@ footer = document.getElementsByClassName('stream-footer')[0];
             window.setTimeout(removeTweets, 250);
         }
         else {
-            document.body.scrollIntoView()
+            document.body.scrollIntoView();
             for (var i=0; i < tweets.length; i++) {
                 elem = tweets[i];
                 elem.parentNode.removeChild(elem);
