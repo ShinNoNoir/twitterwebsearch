@@ -9,8 +9,8 @@ from twitterwebsearch.parser import parse_search_results
 
 TWITTER_PROFILE_URL = 'https://twitter.com/{term}'
 TWITTER_PROFILE_MORE_URL = 'https://twitter.com/i/profiles/show/{term}/timeline?include_available_features=1&include_entities=1&max_position={max_position}'
-TWITTER_SEARCH_URL = 'https://twitter.com/search?q={term}&src=typd'
-TWITTER_SEARCH_MORE_URL = 'https://twitter.com/i/search/timeline?q={term}&src=typd&vertical=default&include_available_features=1&include_entities=1&max_position={max_position}'
+TWITTER_SEARCH_URL = 'https://twitter.com/search?q={term}&src=typd&vertical=default&f=tweets'
+TWITTER_SEARCH_MORE_URL = 'https://twitter.com/i/search/timeline?q={term}&src=typd&vertical=default&f=tweets&include_available_features=1&include_entities=1&max_position={max_position}'
 
 def find_value(html, key):
     pos_begin = html.find(key) + len(key) + 2
