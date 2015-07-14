@@ -192,30 +192,3 @@ def search(query):
     finally:
         driver.quit()
 
-def search_html(query):
-    driver = create_driver()
-    
-    res = ''
-    try:
-        start_search(driver, query)
-        driver.execute_script(SCROLLER_SCRIPT)
-        
-        old_size = size = 0
-        delta = not 0
-        while delta != 0:
-            time.sleep(POLL_TIME)
-            
-            old_size = size
-            size = len(driver.page_source)
-            delta = size - old_size
-            
-        res = driver.page_source
-        
-    except:
-        debug_screenshot(driver)
-        raise
-    finally:
-        driver.quit()
-        
-    return res
-
