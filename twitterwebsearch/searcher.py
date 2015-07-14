@@ -12,12 +12,14 @@ TWITTER_PROFILE_MORE_URL = 'https://twitter.com/i/profiles/show/{term}/timeline?
 TWITTER_SEARCH_URL = 'https://twitter.com/search?q={term}&src=typd&vertical=default&f=tweets'
 TWITTER_SEARCH_MORE_URL = 'https://twitter.com/i/search/timeline?q={term}&src=typd&vertical=default&f=tweets&include_available_features=1&include_entities=1&max_position={max_position}'
 
+DEFAULT_SLEEP = 0.5
+
 def find_value(html, key):
     pos_begin = html.find(key) + len(key) + 2
     pos_end = html.find('"', pos_begin)
     return html[pos_begin: pos_end]
 
-def download_tweets(search=None, profile=None, sleep=1):
+def download_tweets(search=None, profile=None, sleep=DEFAULT_SLEEP):
     assert search or profile
 
     term = (search or profile)
