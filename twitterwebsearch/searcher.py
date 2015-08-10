@@ -36,7 +36,14 @@ def download_tweets(search=None, profile=None, sleep=DEFAULT_SLEEP):
     has_more_items = True
     while has_more_items:
         response = requests.get(url_more.format(term=term, max_position=min_position)).text
-        response_dict = json.loads(response)
+        try:
+            response_dict = json.loads(response)
+        except:
+            import datetime
+            with open('__debug.response_%s.txt' % datetime.datetime.now().strftime('%Y-%m-%d.%H%M'), 'wb') as fh:
+                print >>fh, repr(response)
+            raise
+        
         min_position = response_dict['min_position']
         has_more_items = response_dict['has_more_items'] if profile else False
 
