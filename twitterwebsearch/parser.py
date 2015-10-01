@@ -19,6 +19,10 @@ def parse_tweet_tag(tag):
     content_div = tag.find('div', class_=has_class('content'))
     tweet_body_tag = content_div.find('p', class_=has_class('tweet-text'))
     
+    if tweet_body_tag is None:
+        # Might be a censored tweet, skip
+        return
+    
     lang = tweet_body_tag['lang']
     tweet_text = tweet_body_tag.text
     
@@ -64,5 +68,6 @@ def parse_search_results(html):
     soup_tweets = bs4.BeautifulSoup(html, 'html.parser', parse_only=only_tweet_tags)
     for tag in soup_tweets:
         tweet = parse_tweet_tag(tag)
-        yield tweet
+        if tweet is not None:
+            yield tweet
 
