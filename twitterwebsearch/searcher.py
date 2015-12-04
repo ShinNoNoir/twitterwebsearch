@@ -12,6 +12,8 @@ TWITTER_PROFILE_MORE_URL = 'https://twitter.com/i/profiles/show/{term}/timeline?
 TWITTER_SEARCH_URL = 'https://twitter.com/search?q={term}&src=typd&vertical=default&f=tweets'
 TWITTER_SEARCH_MORE_URL = 'https://twitter.com/i/search/timeline?q={term}&src=typd&vertical=default&f=tweets&include_available_features=1&include_entities=1&max_position={max_position}'
 
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0'
+
 DEFAULT_SLEEP = 0.5
 
 def find_value(html, key):
@@ -26,7 +28,7 @@ def download_tweets(search=None, profile=None, sleep=DEFAULT_SLEEP):
     url = TWITTER_SEARCH_URL if search else TWITTER_PROFILE_URL
     url_more = TWITTER_SEARCH_MORE_URL if search else TWITTER_PROFILE_MORE_URL
 
-    response = requests.get(url.format(term=term)).text
+    response = requests.get(url.format(term=term), headers={'User-agent': USER_AGENT}).text
     max_position = find_value(response, 'data-max-position')
     min_position = find_value(response, 'data-min-position')
 
@@ -35,7 +37,7 @@ def download_tweets(search=None, profile=None, sleep=DEFAULT_SLEEP):
 
     has_more_items = True
     while has_more_items:
-        response = requests.get(url_more.format(term=term, max_position=min_position)).text
+        response = requests.get(url_more.format(term=term, max_position=min_position), headers={'User-agent': USER_AGENT}).text
         try:
             response_dict = json.loads(response)
         except:
