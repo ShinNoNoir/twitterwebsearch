@@ -3,6 +3,7 @@ Module for using the web interface of Twitter's search.
 """
 import json
 import time
+import urllib
 import requests
 from twitterwebsearch.parser import parse_search_results
 
@@ -28,7 +29,7 @@ def download_tweets(search=None, profile=None, sleep=DEFAULT_SLEEP):
     url = TWITTER_SEARCH_URL if search else TWITTER_PROFILE_URL
     url_more = TWITTER_SEARCH_MORE_URL if search else TWITTER_PROFILE_MORE_URL
 
-    response = requests.get(url.format(term=term), headers={'User-agent': USER_AGENT}).text
+    response = requests.get(url.format(term=urllib.quote_plus(term)), headers={'User-agent': USER_AGENT}).text
     max_position = find_value(response, 'data-max-position')
     min_position = find_value(response, 'data-min-position')
 
@@ -36,8 +37,9 @@ def download_tweets(search=None, profile=None, sleep=DEFAULT_SLEEP):
         yield tweet
 
     has_more_items = True
+    last_min_position = None
     while has_more_items:
-        response = requests.get(url_more.format(term=term, max_position=min_position), headers={'User-agent': USER_AGENT}).text
+        response = requests.get(url_more.format(term=urllib.quote_plus(term), max_position=min_position), headers={'User-agent': USER_AGENT}).text
         try:
             response_dict = json.loads(response)
         except:
@@ -47,7 +49,7 @@ def download_tweets(search=None, profile=None, sleep=DEFAULT_SLEEP):
             raise
         
         min_position = response_dict['min_position']
-        has_more_items = response_dict['has_more_items'] if profile else False
+        has_more_items = response_dict['has_more_items'] if profile else last_min_position != min_position
 
         for tweet in parse_search_results(response_dict['items_html'].encode('utf8')):
             yield tweet
@@ -55,6 +57,7 @@ def download_tweets(search=None, profile=None, sleep=DEFAULT_SLEEP):
             if search:
                 has_more_items = True
 
+        last_min_position = min_position
         time.sleep(sleep)
 
 
