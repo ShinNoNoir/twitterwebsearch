@@ -9,7 +9,7 @@ def has_class(class_name):
 
 only_tweet_tags = bs4.SoupStrainer('div', class_=has_class('tweet'), **{'data-tweet-id': True})
 
-def parse_tweet_tag(tag):
+def parse_tweet_tag(tag, expand_emojis=True):
     tweet_id = tag['data-tweet-id']
     permalink = tag['data-permalink-path']
     screen_name = tag['data-screen-name']
@@ -22,6 +22,11 @@ def parse_tweet_tag(tag):
     if tweet_body_tag is None:
         # Might be a censored tweet, skip
         return
+    
+    if expand_emojis:
+        for emoji_tag in tweet_body_tag.find_all(class_='Emoji'):
+            emoji_tag.insert(0, emoji_tag['alt'])
+
     
     lang = tweet_body_tag['lang']
     tweet_text = tweet_body_tag.text
@@ -65,7 +70,7 @@ def parse_tweet_tag(tag):
     return tweet
     
 def parse_search_results(html):
-    soup_tweets = bs4.BeautifulSoup(html, 'html.parser', parse_only=only_tweet_tags)
+    soup_tweets = bs4.BeautifulSoup(html, 'html.parser', parse_only=only_tweet_tags, from_encoding='utf-8')
     for tag in soup_tweets:
         tweet = parse_tweet_tag(tag)
         if tweet is not None:
