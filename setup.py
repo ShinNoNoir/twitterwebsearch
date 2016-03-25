@@ -15,7 +15,7 @@ that is only available through the Twitter web interface
 
 setup(
     name = 'twitterwebsearch',
-    version='0.2.3',
+    version='0.2.5',
     author = 'Raynor Vliegendhart',
     author_email = 'ShinNoNoir@gmail.com',
     url = 'https://github.com/ShinNoNoir/twitterwebsearch',
