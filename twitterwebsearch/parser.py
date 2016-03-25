@@ -70,7 +70,7 @@ def parse_tweet_tag(tag, expand_emojis=True):
     return tweet
     
 def parse_search_results(html):
-    soup_tweets = bs4.BeautifulSoup(html, 'html.parser', parse_only=only_tweet_tags)
+    soup_tweets = bs4.BeautifulSoup(html, 'html.parser', parse_only=only_tweet_tags, from_encoding='utf-8')
     for tag in soup_tweets:
         tweet = parse_tweet_tag(tag)
         if tweet is not None:
